@@ -1,0 +1,11 @@
+<launch>
+
+  <node pkg="nodelet" type="nodelet" name="topic_buffer_node" args="standalone topic_buffer/TopicBufferNodelet">
+    <param name="delay" type="double" value="2.0"/>
+    <remap from="~input" to="/chatter"/>
+    <remap from="~output" to="/delayed_chatter"/>
+  </node>
+
+  <node pkg="topic_buffer" type="example_talker.py" name="example_talker"/>
+
+</launch>

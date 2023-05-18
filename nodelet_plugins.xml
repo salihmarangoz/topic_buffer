@@ -1,0 +1,7 @@
+<library path="lib/libtopic_buffer">
+    <class name="topic_buffer/TopicBufferNodelet" type="topic_buffer::TopicBufferNodelet" base_class_type="nodelet::Nodelet">
+        <description>
+            Topic buffering with delay and clear functions
+        </description>
+    </class>
+</library>
