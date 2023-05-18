@@ -83,8 +83,9 @@ TopicBufferNodelet::PublisherThread()
 
       if (current_time < queue_.front().publish_time)
       {
+        auto timediff = queue_.front().publish_time - current_time;
         mutex_.unlock();
-        std::this_thread::sleep_for(queue_.front().publish_time - current_time); // wait for the front() message to be published
+        std::this_thread::sleep_for(timediff); // wait for the message to be published. the queue can be cleared while waiting here!
         mutex_.lock();
       }
 
