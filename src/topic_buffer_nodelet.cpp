@@ -67,29 +67,38 @@ TopicBufferNodelet::PublisherThread()
 {
   while (ros::ok())
   {
-    while (queue_.size() > 0) // cache the latest message
+    while (queue_.size() > 0) 
     {
-      mutex_.lock();
+      mutex_.lock(); // cache the latest message
+
+      // super-rare case. just make sure that we have at least a message in the queue.
+      if (queue_.size() == 0)
+      {
+        mutex_.unlock();
+        queue_cleared_ = false;
+        continue;
+      }
+
       auto current_time = std::chrono::system_clock::now();
 
       if (current_time < queue_.front().publish_time)
       {
         mutex_.unlock();
-        std::this_thread::sleep_for(queue_.front().publish_time - current_time); // wait for the front message's time to be published
+        std::this_thread::sleep_for(queue_.front().publish_time - current_time); // wait for the front() message to be published
         mutex_.lock();
       }
 
-      if (!queue_cleared_) // if queue is cleared, don't publish the cached message
+      // if queue is cleared, don't publish the cached message
+      if (!queue_cleared_) 
       {
         pub_.publish(queue_.front().msg);
         queue_.pop();
       }
       queue_cleared_ = false;
-
       mutex_.unlock();
     }
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(uint64_t(500*delay_)));
+    std::this_thread::sleep_for(std::chrono::milliseconds(uint64_t(500*delay_))); // wait for half-time (not full!) "delay" just in case if we miss the incoming data to the queue
   }
 }
 
